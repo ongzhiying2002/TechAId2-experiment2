@@ -1,0 +1,1442 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description"
+    content="EdTechAId - AI-powered pedagogical guidance and educational technology recommendation advisor." />
+  <title>EdTechAId | AI Pedagogical &amp; EdTech Advisor</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css?v=20261006_v22" />
+</head>
+
+<body>
+
+  <!-- ===== TOP HEADER ===== -->
+  <header class="header">
+    <div class="header-inner">
+      <div class="brand-group">
+        <div class="logo">
+          <span class="logo-icon">🎓</span>
+          <span class="logo-text">EdTech<span class="logo-accent">AId</span></span>
+        </div>
+        <div class="header-tagline">Educational Assistant</div>
+      </div>
+      <div class="header-actions">
+        <button type="button" class="btn-tools-catalog" onclick="openEdTechToolsModal()" id="btn-open-tools-catalog"
+          title="Explore SIT EdTech Tools">
+          <span class="btn-tools-icon">🛠️</span>
+          <span class="btn-tools-title">EdTech Tools Directory</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ===== MAIN CONTAINER ===== -->
+  <main class="main-content">
+
+    <!-- STEP NAVIGATION BAR (Page 1: Module Profile | Page 2: Recommendation | Page 3: Custom Focus (Optional) | Page 4: Institutional Showcase) -->
+    <div class="step-container" id="step-container">
+      <div class="step-nav" id="step-nav" role="tablist" aria-label="Workflow Steps">
+        <div class="step-item active" id="step-1" role="tab" aria-selected="true" onclick="switchStep(1)"
+          style="cursor: pointer;">
+          <span class="step-badge active-badge">1</span>
+          <span class="step-text">Module Profile</span>
+        </div>
+        <div class="step-item" id="step-2" role="tab" aria-selected="false" onclick="proceedToRecommendations()"
+          style="cursor: pointer;">
+          <span class="step-badge">2</span>
+          <span class="step-text">Recommendation</span>
+        </div>
+        <div class="step-item" id="step-3" role="tab" aria-selected="false" onclick="switchStep(3)"
+          style="cursor: pointer;">
+          <span class="step-badge">3</span>
+          <span class="step-text">Custom Focus (Optional)</span>
+        </div>
+        <div class="step-item" id="step-4" role="tab" aria-selected="false" onclick="switchStep(4)"
+          style="cursor: pointer;">
+          <span class="step-badge">4</span>
+          <span class="step-text">Institutional Showcase</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- MAIN INPUT CARD CONTAINER -->
+    <div class="main-card">
+
+      <!-- SUB-NAVIGATION TABS (Upload File & Paste Text Centered with Equal Width) -->
+      <div class="card-tab-nav" role="tablist">
+        <div class="tab-btn-group">
+          <button class="card-tab-btn active" id="btn-tab-upload" role="tab" aria-selected="true"
+            onclick="switchInputSubTab('upload')">
+            <span class="tab-btn-icon">☁️</span> Upload File
+          </button>
+          <button class="card-tab-btn" id="btn-tab-paste" role="tab" aria-selected="false"
+            onclick="switchInputSubTab('paste')">
+            <span class="tab-btn-icon">📄</span> Paste Text
+          </button>
+        </div>
+      </div>
+
+      <!-- TAB PANEL 1: UPLOAD FILE -->
+      <div id="panel-upload" class="input-panel">
+        <div class="dropzone" id="dropzone" role="button" tabindex="0"
+          aria-label="Drop zone: click or drop syllabus file here" ondragover="handleDragOver(event)"
+          ondragleave="handleDragLeave(event)" ondrop="handleDrop(event)"
+          onclick="document.getElementById('file-input').click()"
+          onkeydown="if(event.key==='Enter'||event.key===' ')document.getElementById('file-input').click()">
+          <div class="dropzone-cloud-icon">
+            <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
+              stroke-linecap="round" stroke-linejoin="round">
+              <path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242"></path>
+              <path d="m8 17 4-4 4 4"></path>
+              <path d="M12 13v9"></path>
+            </svg>
+          </div>
+          <p class="dropzone-title">Click to browse or drop syllabus file here</p>
+          <p class="dropzone-sub">Supports PDF, TXT, MD (Max 50MB)</p>
+        </div>
+
+        <input type="file" id="file-input" accept=".pdf,.txt,.md" style="display:none"
+          onchange="handleFileSelect(event)" aria-label="Upload module profile file" />
+
+        <div id="file-info" class="file-info hidden">
+          <span class="file-icon">📄</span>
+          <span id="file-name-display" class="file-name-text"></span>
+          <button class="btn-clear-file" onclick="clearFile()" aria-label="Remove selected file"
+            title="Remove file">✕</button>
+        </div>
+      </div>
+
+      <!-- TAB PANEL 2: PASTE TEXT -->
+      <div id="panel-paste" class="input-panel hidden">
+        <textarea id="paste-input" class="paste-textarea" placeholder="Paste module profile outline text here..."
+          aria-label="Paste module profile text" spellcheck="false"></textarea>
+        <div class="paste-footer">
+          <span id="char-count" class="char-count">0 characters</span>
+        </div>
+      </div>
+
+      <!-- CARD FOOTER ACTION BAR (Clean without hint text) -->
+      <div class="card-footer-action">
+        <div class="footer-action-right">
+          <button class="btn-extract-main" id="btn-extract" onclick="extractModuleInfo()"
+            aria-label="Extract Module Profile">
+            Extract Module Profile
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M5 12h14M12 5l7 7-7 7" />
+            </svg>
+          </button>
+        </div>
+      </div>
+
+    </div><!-- /main-card -->
+
+    <!-- LOADING & ERROR STATES -->
+    <div id="loading-indicator" class="loading-indicator hidden" aria-live="polite" aria-busy="true">
+      <div class="spinner"></div>
+      <p>Extracting and parsing module profile information...</p>
+    </div>
+
+    <div id="error-banner" class="error-banner hidden" role="alert" aria-live="assertive">
+      <span>⚠️</span> <span id="error-message"></span>
+    </div>
+
+    <!-- RECENT MODULE PROFILE SECTION (Persistent Saved Profiles) -->
+    <section class="recent-syllabi-section" id="recent-section">
+      <div class="recent-header">
+        <div class="recent-title-group">
+          <span class="recent-icon">🕒</span>
+          <h3 class="recent-title">Recent Module Profile (<span id="recent-count">0</span>)</h3>
+        </div>
+        <button class="btn-clear-recent" onclick="clearAllRecent()" aria-label="Clear recent list">Clear</button>
+      </div>
+
+      <div class="recent-grid" id="recent-grid">
+        <!-- Rendered via JavaScript -->
+      </div>
+    </section>
+
+    <!-- EXTRACTED OUTPUT PANEL (Structured & Editable) -->
+    <section id="output-panel" class="output-panel hidden">
+      <!-- Clickable Collapsible Banner matching Picture 2 -->
+      <div class="output-banner-header" id="output-banner-header" role="button" tabindex="0"
+        onclick="toggleOutputCollapse()" onkeydown="if(event.key==='Enter'||event.key===' ')toggleOutputCollapse()"
+        aria-expanded="false" aria-controls="output-collapsible-body"
+        title="Click to expand or collapse Extracted Module Profile">
+        <div class="output-banner-title">
+          <span class="output-banner-icon">📋</span>
+          <span class="output-banner-text">Extracted Module Profile</span>
+        </div>
+        <span class="output-banner-arrow" id="output-banner-arrow">▼</span>
+      </div>
+
+      <!-- Collapsible Body Container -->
+      <div id="output-collapsible-body" class="output-collapsible-body collapsed">
+        <div class="output-sections-wrapper">
+
+          <!-- 1. Module Code -->
+          <div class="section-card" id="card-module-code">
+            <div class="section-card-header">
+              <span class="section-icon">🔖</span>
+              <label class="section-title-label" for="out-module-code">1. Module Code</label>
+            </div>
+            <div class="field-value single-line" id="out-module-code" contenteditable="true" role="textbox"
+              aria-label="Module Code" aria-multiline="false" spellcheck="false"
+              data-placeholder="Not found in document — click to enter manually"></div>
+          </div>
+
+          <!-- 2. Module Name -->
+          <div class="section-card" id="card-module-name">
+            <div class="section-card-header">
+              <span class="section-icon">📌</span>
+              <label class="section-title-label" for="out-module-name">2. Module Name</label>
+            </div>
+            <div class="field-value single-line" id="out-module-name" contenteditable="true" role="textbox"
+              aria-label="Module Name" aria-multiline="false" spellcheck="false"
+              data-placeholder="Not found in document — click to enter manually"></div>
+          </div>
+
+          <!-- 3. Module Descriptor -->
+          <div class="section-card" id="card-descriptor">
+            <div class="section-card-header">
+              <span class="section-icon">📝</span>
+              <label class="section-title-label" for="out-descriptor">3. Module Descriptor</label>
+            </div>
+            <div class="field-value multi-line" id="out-descriptor" contenteditable="true" role="textbox"
+              aria-label="Module Descriptor" aria-multiline="true" spellcheck="true"
+              data-placeholder="Not found in document — click to enter descriptor"></div>
+          </div>
+
+          <!-- 4. Learning Outcomes -->
+          <div class="section-card" id="card-outcomes">
+            <div class="section-card-header">
+              <span class="section-icon">🎯</span>
+              <div class="section-label-block">
+                <label class="section-title-label">4. Learning Outcomes</label>
+              </div>
+              <button class="btn-add-item" onclick="addListItem('list-outcomes')" aria-label="Add learning outcome">+
+                Add
+                Outcome</button>
+            </div>
+            <ol class="separated-list" id="list-outcomes" aria-label="Learning Outcomes list"></ol>
+          </div>
+
+          <!-- 5. Topics Covered & Details -->
+          <div class="section-card" id="card-topics">
+            <div class="section-card-header">
+              <span class="section-icon">📚</span>
+              <div class="section-label-block">
+                <label class="section-title-label">5. Topics Covered &amp; Details</label>
+              </div>
+              <button class="btn-add-item" onclick="addListItem('list-topics')" aria-label="Add topic">+ Add
+                Topic</button>
+            </div>
+            <ol class="separated-list" id="list-topics" aria-label="Topics Covered list"></ol>
+          </div>
+
+          <!-- 6. Learning Activities & Details -->
+          <div class="section-card" id="card-activities">
+            <div class="section-card-header">
+              <span class="section-icon">⚡</span>
+              <div class="section-label-block">
+                <label class="section-title-label">6. Learning Activities &amp; Details</label>
+              </div>
+              <button class="btn-add-item" onclick="addListItem('list-activities')" aria-label="Add learning activity">+
+                Add Learning Activity</button>
+            </div>
+            <ol class="separated-list" id="list-activities" aria-label="Learning Activities list"></ol>
+          </div>
+
+        </div>
+
+        <div class="edit-hint-box">
+          💡 <strong>Note:</strong> All fields are editable.
+        </div>
+      </div> <!-- End #output-collapsible-body -->
+
+      <div class="step-footer-actions">
+        <div class="footer-actions-left" style="display: flex; gap: var(--space-2); flex-wrap: wrap;">
+          <button type="button" class="btn btn-secondary" onclick="resetAll()" title="Reset extracted output">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+              <path d="M3 3v5h5" />
+            </svg>
+            Reset Profile
+          </button>
+          <button class="btn btn-secondary" onclick="saveCurrentModuleProfile(true)" id="btn-save-bottom">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" />
+              <polyline points="17 21 17 13 7 13 7 21" />
+              <polyline points="7 3 7 8 15 8" />
+            </svg>
+            Save Profile
+          </button>
+          <div class="download-profile-dropdown-wrapper" style="position: relative; display: inline-block;">
+            <button type="button" class="btn btn-secondary" onclick="toggleDownloadProfileMenu(event)"
+              id="btn-export-profile" title="Download module profile as HTML or PDF or TXT" aria-haspopup="true"
+              aria-expanded="false">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                <polyline points="7 10 12 15 17 10" />
+                <line x1="12" y1="15" x2="12" y2="3" />
+              </svg>
+              Download Profile
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                style="margin-left: 4px; transition: transform 0.2s;" id="download-profile-chevron">
+                <polyline points="6 9 12 15 18 9"></polyline>
+              </svg>
+            </button>
+            <div id="download-profile-menu" class="download-profile-menu hidden" role="menu"
+              aria-labelledby="btn-export-profile">
+              <button type="button" class="download-menu-item" onclick="downloadProfileAsHTML(event)" role="menuitem">
+                <span class="download-menu-item-icon">🌐</span>
+                <div class="download-menu-item-content">
+                  <span class="download-menu-item-title">HTML Webpage (.html)</span>
+                  <span class="download-menu-item-desc">Self-contained standalone webpage</span>
+                </div>
+              </button>
+              <button type="button" class="download-menu-item" onclick="downloadProfileAsPDF(event)" role="menuitem">
+                <span class="download-menu-item-icon">📄</span>
+                <div class="download-menu-item-content">
+                  <span class="download-menu-item-title">PDF Document (.pdf)</span>
+                  <span class="download-menu-item-desc">Print-ready formatted document</span>
+                </div>
+              </button>
+              <button type="button" class="download-menu-item" onclick="downloadProfileAsTXT(event)" role="menuitem">
+                <span class="download-menu-item-icon">📝</span>
+                <div class="download-menu-item-content">
+                  <span class="download-menu-item-title">Text Document (.txt)</span>
+                  <span class="download-menu-item-desc">Clean formatted text file</span>
+                </div>
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="footer-actions-right">
+          <button type="button" class="btn btn-primary" onclick="proceedToRecommendations()" id="btn-proceed-to-rec">
+            <span>Proceed to Recommendation</span>
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M5 12h14M12 5l7 7-7 7" />
+            </svg>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== EMPTY STATE (Shown on Step 2 when no module profile is uploaded yet) ===== -->
+    <section id="rec-empty-state-section" class="rec-empty-state-section hidden"
+      aria-label="No Module Profile Uploaded">
+      <div class="rec-empty-state-card">
+        <div class="rec-empty-state-icon">
+          <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+            stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+            <polyline points="14 2 14 8 20 8"></polyline>
+            <line x1="16" y1="13" x2="8" y2="13"></line>
+            <line x1="16" y1="17" x2="8" y2="17"></line>
+            <line x1="10" y1="9" x2="8" y2="9"></line>
+          </svg>
+        </div>
+        <h2 class="rec-empty-state-title">No Module Profile Uploaded Yet</h2>
+        <p class="rec-empty-state-desc">
+          To receive personalized EdTech tool recommendations, please upload your module syllabus file on <strong>Step 1
+            Module Profile</strong> first.
+        </p>
+        <div class="rec-empty-state-actions">
+          <button type="button" class="btn btn-primary" onclick="switchStep(1)">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+              stroke-linecap="round" stroke-linejoin="round">
+              <path d="M19 12H5M12 19l-7-7 7-7" />
+            </svg>
+            <span>Back to Module Profile</span>
+          </button>
+          <button type="button" class="btn btn-secondary" onclick="openEdTechToolsModal()">
+            <span>🛠️ Browse EdTech Directory</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== RECOMMENDED EDTECH TOOLS SECTION (Ranked by Pedagogical Fit & Proven Adoption Evidence) ===== -->
+    <section id="module-recommendations-section" class="module-recommendations-section hidden"
+      aria-label="Tool Recommendations">
+
+      <!-- 1. Standalone Header Section Card (Recommended EdTech Tools) -->
+      <div class="rec-header-card section-card">
+        <!-- Top Row: Icon + (Heading with Badge on same row & Subtitle below) -->
+        <div class="rec-header-top-row" style="display: flex; align-items: flex-start; gap: 14px; width: 100%;">
+          <span class="rec-section-icon" style="margin-top: 2px;">✨</span>
+          <div class="rec-title-desc-block"
+            style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px;">
+            <div class="rec-title-row"
+              style="display: flex; align-items: center; justify-content: space-between; gap: 16px; width: 100%;">
+              <h2 class="rec-section-heading" style="margin: 0;">Recommended EdTech Tools</h2>
+              <span class="rec-module-header-badge" id="rec-module-header-badge" style="display: none;"></span>
+            </div>
+            <p class="rec-section-desc" id="rec-section-desc" style="margin: 4px 0 0 0;">
+              Analyse module descriptor, learning outcomes, topics covered, and activities against EdTech tool
+              capabilities.
+            </p>
+          </div>
+        </div>
+
+        <!-- Bottom Row (below subtitle): Back to Module Profile on Left, Forward on Right -->
+        <div class="rec-header-sub-actions"
+          style="display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; width: 100%; margin-top: 12px;">
+          <!-- Left: Back to Module Profile -->
+          <button type="button" class="btn btn-secondary" onclick="switchStep(1)"
+            title="Back to Extracted Module Profile"
+            style="display: inline-flex; align-items: center; gap: 8px; font-weight: 600;">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round">
+              <path d="M19 12H5M12 19l-7-7 7-7" />
+            </svg>
+            <span>Back to Module Profile</span>
+          </button>
+
+          <!-- Right: Custom Focus (Optional) & Institutional Showcase -->
+          <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+            <button type="button" class="btn btn-primary" onclick="switchStep(3)"
+              title="Target recommendations to specific classroom activities or custom challenges"
+              style="display: inline-flex; align-items: center; gap: 8px; font-weight: 600;">
+              <span>Custom Focus (Optional)</span>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <path d="M5 12h14M12 5l7 7-7 7" />
+              </svg>
+            </button>
+            <button type="button" class="btn btn-secondary" onclick="switchStep(4)"
+              title="Proceed to Institutional Showcase"
+              style="display: inline-flex; align-items: center; gap: 8px; font-weight: 600;">
+              <span>Institutional Showcase</span>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <path d="M5 12h14M12 5l7 7-7 7" />
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. Recommendations & Controls Content Card -->
+      <div class="rec-section-card">
+
+        <!-- Controls: Actions (Scoring) & Filter / View Mode Switcher -->
+        <div class="rec-controls-bar" style="display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 20px;">
+          <!-- Results Count / Info on the Left -->
+          <div class="rec-results-info" style="margin-bottom: 0;">
+            <span id="rec-cards-count-label">Showing top 5 of evaluated tools</span>
+          </div>
+
+          <!-- Actions & View Mode Switcher on the Right -->
+          <div style="display: inline-flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+            <!-- Scoring Calculation Button (Moved to right, B&W icon, same shape & fill as Back to Module Profile) -->
+            <button type="button" class="btn btn-secondary" onclick="openScoringCalcModal()"
+              title="View transparent point calculation and formula for recommendations"
+              style="display: inline-flex; align-items: center; gap: 8px; font-weight: 600;">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex-shrink: 0;">
+                <rect x="4" y="2" width="16" height="20" rx="2"></rect>
+                <line x1="8" y1="6" x2="16" y2="6"></line>
+                <line x1="16" y1="14" x2="16" y2="14.01"></line>
+                <line x1="12" y1="14" x2="12" y2="14.01"></line>
+                <line x1="8" y1="14" x2="8" y2="14.01"></line>
+                <line x1="16" y1="18" x2="16" y2="18.01"></line>
+                <line x1="12" y1="18" x2="12" y2="18.01"></line>
+                <line x1="8" y1="18" x2="8" y2="18.01"></line>
+              </svg>
+              <span>Scoring Calculation</span>
+            </button>
+
+            <!-- Segmented Cards & Table Toggle Group (Together in one combined pill) -->
+            <div class="rec-segmented-group" role="group" aria-label="Layout View">
+              <!-- Cards Button (Grey active state) -->
+              <button type="button" class="btn-rec-layout-toggle active" id="btn-toggle-rec-cards"
+                onclick="setRecLayoutMode('cards')" title="View detailed recommendation cards"
+                style="display: inline-flex; align-items: center; gap: 7px; font-weight: 600; background: #64748b; color: #ffffff;">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                  stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex-shrink: 0;">
+                  <rect x="3" y="3" width="7" height="7"></rect>
+                  <rect x="14" y="3" width="7" height="7"></rect>
+                  <rect x="14" y="14" width="7" height="7"></rect>
+                  <rect x="3" y="14" width="7" height="7"></rect>
+                </svg>
+                <span>Cards</span>
+              </button>
+
+              <!-- Table Button (White inactive state) -->
+              <button type="button" class="btn-rec-layout-toggle" id="btn-toggle-rec-table"
+                onclick="setRecLayoutMode('table')" title="View compact comparison table"
+                style="display: inline-flex; align-items: center; gap: 7px; font-weight: 600; background: #ffffff; color: #475569;">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                  stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex-shrink: 0;">
+                  <rect x="3" y="3" width="18" height="18" rx="2"></rect>
+                  <line x1="3" y1="9" x2="21" y2="9"></line>
+                  <line x1="3" y1="15" x2="21" y2="15"></line>
+                  <line x1="12" y1="3" x2="12" y2="21"></line>
+                </svg>
+                <span>Table</span>
+              </button>
+            </div>
+          </div>
+        </div> <!-- End .rec-controls-bar -->
+
+        <!-- Dynamic Container for Ranked Cards (Visible in Cards mode) -->
+        <div id="rec-cards-list" class="rec-cards-list">
+          <!-- Rendered dynamically via renderPrincipledToolRecommendations() in app.js -->
+        </div>
+
+        <!-- Shortlist Comparison Table (Visible in Table mode) -->
+        <div id="rec-shortlist-table-container" class="rec-shortlist-table-container hidden">
+          <!-- Rendered dynamically via renderPrincipledToolRecommendations() in app.js -->
+        </div>
+
+        <!-- See More & See Less Pagination Controls -->
+        <div id="rec-see-more-wrapper" class="rec-see-more-wrapper hidden">
+          <div style="display: flex; align-items: center; justify-content: center; gap: 12px; flex-wrap: wrap;">
+            <button type="button" id="btn-rec-see-less" class="btn btn-secondary hidden" onclick="handleRecSeeLess()"
+              style="display: inline-flex; align-items: center; gap: 6px; font-weight: 600; padding: 8px 18px; border-radius: 8px; border: 1.5px solid #cbd5e1; background: #ffffff; color: #334155; box-shadow: 0 1px 2px rgba(0,0,0,0.04);">
+              <span>➖ See Less</span>
+            </button>
+            <button type="button" id="btn-rec-see-more" class="btn btn-primary" onclick="handleRecSeeMore()"
+              style="display: inline-flex; align-items: center; gap: 6px; font-weight: 600; padding: 8px 20px; border-radius: 8px; box-shadow: 0 2px 6px rgba(37,99,235,0.2);">
+              <span>➕ See More (Next 2 Tools)</span>
+            </button>
+          </div>
+          <span id="rec-see-more-hint" style="font-size: 12px; color: #64748b; font-weight: 500; margin-top: 4px;">
+            Showing top 5 of evaluated tools
+          </span>
+        </div>
+
+      </div> <!-- End .rec-section-card -->
+
+      <!-- Page 2 Footer Actions (Outside the box like Step 1) -->
+      <div class="step-footer-actions rec-page-footer-actions">
+        <div class="footer-actions-left">
+          <button type="button" class="btn btn-secondary" onclick="switchStep(1)"
+            style="font-weight: 600; display: inline-flex; align-items: center; gap: 8px;">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round">
+              <path d="M19 12H5M12 19l-7-7 7-7" />
+            </svg>
+            <span>Back to Module Profile</span>
+          </button>
+        </div>
+        <div class="footer-actions-right"
+          style="display: flex; gap: var(--space-2); flex-wrap: wrap; align-items: center;">
+          <button type="button" class="btn btn-primary" onclick="switchStep(3)"
+            style="font-weight: 600; display: inline-flex; align-items: center; gap: 8px;">
+            <span>Proceed to Custom Focus (Optional)</span>
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round">
+              <path d="M5 12h14M12 5l7 7-7 7" />
+            </svg>
+          </button>
+          <button type="button" class="btn btn-secondary" onclick="switchStep(4)"
+            style="font-weight: 600; display: inline-flex; align-items: center; gap: 8px;">
+            <span>Skip to Institutional Showcase</span>
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round">
+              <path d="M5 12h14M12 5l7 7-7 7" />
+            </svg>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== STEP 3: CUSTOM FOCUS (OPTIONAL) SECTION ===== -->
+    <section id="optional-custom-focus-section" class="optional-custom-focus-section hidden"
+      aria-label="Custom Focus (Optional)">
+
+      <!-- 1. Header Section Card -->
+      <div class="rec-header-card section-card">
+        <!-- Top Row: Icon + Title & Subtitle -->
+        <div class="rec-header-top-row" style="display: flex; align-items: flex-start; gap: 14px; width: 100%;">
+          <span class="rec-section-icon"
+            style="background: linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 100%); margin-top: 2px;">🎯</span>
+          <div class="rec-title-desc-block" style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px;">
+            <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+              <h2 class="rec-section-heading" style="margin: 0; font-size: 20px; font-weight: 800; color: #0f172a;">Custom Focus (Optional)</h2>
+              <span class="badge" style="background: #eef2ff; color: #4338ca; border: 1px solid #c7d2fe; font-size: 11px; font-weight: 700; padding: 2px 10px; border-radius: 9999px;">OPTIONAL</span>
+            </div>
+            <p class="rec-section-desc" style="margin: 4px 0 0 0; color: #64748b; font-size: 13.5px;">
+              Target recommendations to specific classroom learning activities, customized challenges, or regenerate fresh options.
+            </p>
+          </div>
+        </div>
+
+        <!-- Bottom Row (below subtitle): Action buttons -->
+        <div class="rec-header-sub-actions"
+          style="display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; width: 100%; margin-top: 14px;">
+          <!-- Left: Back to Recommendation -->
+          <button type="button" class="btn btn-secondary" onclick="switchStep(2)" title="Back to Tool Recommendations"
+            style="display: inline-flex; align-items: center; gap: 8px; font-weight: 600;">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round">
+              <path d="M19 12H5M12 19l-7-7 7-7" />
+            </svg>
+            <span>Back to Recommendation</span>
+          </button>
+
+          <!-- Right: Proceed to Institutional Showcase -->
+          <button type="button" class="btn btn-secondary" onclick="switchStep(4)"
+            title="Proceed to Institutional Showcase"
+            style="display: inline-flex; align-items: center; gap: 8px; font-weight: 600;">
+            <span>Institutional Showcase</span>
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round">
+              <path d="M5 12h14M12 5l7 7-7 7" />
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- 2. Main Content Card: Custom Focus Input Section -->
+      <div class="rec-section-card" style="margin-top: 20px;">
+
+        <!-- ===== TARGET SPECIFIC ACTIVITIES & CLASSROOM CHALLENGES (UNIFIED CARD) ===== -->
+        <div id="rec-input-methods-card" class="rec-input-methods-card">
+          <div class="rec-input-methods-header">
+            <div class="rec-input-title-wrap">
+              <span class="rec-input-icon">🎯</span>
+              <div>
+                <h3 class="rec-input-title">Target Specific Activities &amp; Classroom Challenges</h3>
+                <p class="rec-input-subtitle">Select an extracted teaching context below or describe a specific classroom friction to tailor recommendations.</p>
+              </div>
+            </div>
+            <div id="rec-input-active-badge-wrap" class="hidden">
+              <span class="rec-input-active-pill" id="rec-input-active-pill">
+                <span id="rec-input-active-pill-text">🎯 Custom Focus Active</span>
+                <button type="button" class="btn-clear-custom-focus" onclick="clearCustomProblemTargeting()"
+                  title="Reset to full syllabus recommendations">✕</button>
+              </span>
+            </div>
+          </div>
+
+          <!-- Unified Feature Box: Quick Select Above Textbox -->
+          <div class="rec-feature-box rec-unified-focus-box">
+            <div class="rec-feature-header"
+              style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <span class="rec-feature-tag" style="background: #dbeafe; color: #1e40af;">Quick Select &amp; Custom Input</span>
+                <span style="font-size: 12.5px; color: #475569; font-weight: 500;">
+                  Click a quick-action teaching context or type your own classroom friction:
+                </span>
+              </div>
+            </div>
+
+            <!-- Quick Select Chips (Above Textbox) with Black & White Reset Icon at the end -->
+            <div class="rec-quick-options-container" style="display: flex; align-items: center; flex-wrap: wrap; gap: 8px;">
+              <div id="rec-quick-activities-chips" class="rec-quick-activities-chips" style="display: inline-flex; flex-wrap: wrap; gap: 8px; align-items: center;">
+                <!-- Dynamically populated via renderModuleLearningActivitiesQuickSelect() -->
+              </div>
+              <button type="button" id="btn-regen-quick-activities" class="btn-quick-reset-icon"
+                onclick="regenerateQuickActionTeachingContextsWithGemini()"
+                title="Reset / Regenerate options with Gemini 3.8 Flash"
+                aria-label="Regenerate options with Gemini 3.8 Flash">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/>
+                </svg>
+              </button>
+            </div>
+
+            <!-- Custom Problem Input Row (Extendable Textarea) -->
+            <div class="rec-custom-problem-row" style="margin-top: 6px;">
+              <div class="rec-input-wrap">
+                <textarea id="rec-custom-problem-input" class="rec-custom-problem-input" rows="3"
+                  placeholder="e.g., “Students struggle with syntax debugging in Python lab sessions and need timely hints without giving away solutions.”"
+                  oninput="handleCustomProblemInputChange(this.value)"
+                  onkeydown="if(event.key==='Enter' && !event.shiftKey){event.preventDefault();submitCustomProblemTargeting();}"></textarea>
+                <button type="button" id="btn-clear-problem-input" class="btn-clear-problem-text hidden"
+                  onclick="clearCustomProblemInput()" title="Clear text">✕</button>
+              </div>
+              <button type="button" id="btn-rec-target-submit" class="btn-rec-target-submit"
+                onclick="submitCustomProblemTargeting()"
+                title="Generate targeted recommendations using Google Gemini 3.8 Flash">
+                <span>✨</span>
+                <span>Recommend Tools</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ===== UPDATED RECOMMENDATIONS SECTION ON OPTIONAL TAB ===== -->
+        <div id="optional-tab-rec-section" style="margin-top: 26px; border-top: 1px solid #e2e8f0; padding-top: 22px;">
+          <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; margin-bottom: 18px;">
+            <div>
+              <h3 style="margin: 0; font-size: 16.5px; font-weight: 700; color: #0f172a; display: flex; align-items: center; gap: 8px;">
+                <span>✨</span> Updated Recommended Tools
+              </h3>
+              <p id="optional-rec-subtitle" style="margin: 3px 0 0 0; font-size: 13px; color: #64748b;">
+                Select a learning activity or type a classroom challenge above to view targeted recommendations.
+              </p>
+            </div>
+            <div style="display: flex; gap: 8px; align-items: center;">
+              <button type="button" class="btn btn-secondary hidden" id="btn-optional-scoring-calc" onclick="openCustomFocusScoringCalcModal()"
+                title="View transparent point calculation and formula"
+                style="display: inline-flex; align-items: center; gap: 7px; font-weight: 600; font-size: 12.5px;">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                  stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex-shrink: 0;">
+                  <rect x="4" y="2" width="16" height="20" rx="2"></rect>
+                  <line x1="8" y1="6" x2="16" y2="6"></line>
+                  <line x1="16" y1="14" x2="16" y2="14.01"></line>
+                  <line x1="12" y1="14" x2="12" y2="14.01"></line>
+                  <line x1="8" y1="14" x2="8" y2="14.01"></line>
+                  <line x1="16" y1="18" x2="16" y2="18.01"></line>
+                  <line x1="12" y1="18" x2="12" y2="18.01"></line>
+                  <line x1="8" y1="18" x2="8" y2="18.01"></line>
+                </svg>
+                <span>Scoring Calculation</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Cards List container on Optional Tab -->
+          <div id="optional-rec-cards-list" class="rec-cards-list" style="display: flex; flex-direction: column; gap: 16px;">
+            <div class="optional-rec-empty-placeholder" style="text-align: center; padding: 46px 20px; background: #f8fafc; border: 1.5px dashed #cbd5e1; border-radius: 12px; margin: 4px 0;">
+              <div style="font-size: 34px; margin-bottom: 10px;">🎯</div>
+              <h4 style="margin: 0 0 6px 0; font-size: 15px; font-weight: 700; color: #1e293b;">No Custom Focus Selected Yet</h4>
+              <p style="margin: 0 auto; max-width: 480px; font-size: 13px; color: #64748b; line-height: 1.5;">
+                Select a learning activity from <strong>Feature A</strong> or type a classroom challenge in <strong>Feature B</strong> above, then click <strong>✨ Recommend Tools</strong> to generate updated recommendations here.
+              </p>
+            </div>
+          </div>
+
+          <!-- See More & See Less Pagination Controls for Custom Focus -->
+          <div id="optional-rec-see-more-wrapper" class="rec-see-more-wrapper hidden" style="margin-top: 18px; text-align: center;">
+            <div style="display: flex; align-items: center; justify-content: center; gap: 12px; flex-wrap: wrap;">
+              <button type="button" id="btn-optional-see-less" class="btn btn-secondary hidden" onclick="handleOptionalRecSeeLess()"
+                style="display: inline-flex; align-items: center; gap: 6px; font-weight: 600; padding: 8px 18px; border-radius: 8px; border: 1.5px solid #cbd5e1; background: #ffffff; color: #334155; box-shadow: 0 1px 2px rgba(0,0,0,0.04); cursor: pointer; transition: all 0.15s ease;">
+                <span>➖ See Less</span>
+              </button>
+              <button type="button" id="btn-optional-see-more" class="btn btn-primary" onclick="handleOptionalRecSeeMore()"
+                style="display: inline-flex; align-items: center; gap: 6px; font-weight: 600; padding: 8px 20px; border-radius: 8px; box-shadow: 0 2px 6px rgba(37,99,235,0.2); cursor: pointer; transition: all 0.15s ease;">
+                <span>➕ See More (+2 More Tools)</span>
+              </button>
+            </div>
+            <span id="optional-rec-see-more-hint" style="font-size: 12px; color: #64748b; font-weight: 500; margin-top: 6px; display: block;">
+              Showing top 5 of evaluated tools
+            </span>
+          </div>
+        </div>
+
+        <!-- Bottom Footer for Step 3 -->
+        <div class="card-footer"
+          style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-top: 28px; padding-top: 20px; border-top: 1px solid #e2e8f0;">
+          <button type="button" class="btn btn-secondary" onclick="switchStep(2)"
+            style="font-weight: 600; display: inline-flex; align-items: center; gap: 8px;">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round">
+              <path d="M19 12H5M12 19l-7-7 7-7" />
+            </svg>
+            <span>Back to Recommendation</span>
+          </button>
+          <button type="button" class="btn btn-primary" onclick="switchStep(4)"
+            style="font-weight: 600; display: inline-flex; align-items: center; gap: 8px;">
+            <span>Proceed to Institutional Showcase</span>
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round">
+              <path d="M5 12h14M12 5l7 7-7 7" />
+            </svg>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== STEP 4: INSTITUTIONAL SHOWCASE SECTION ===== -->
+    <section id="institutional-showcase-section" class="institutional-showcase-section hidden"
+      aria-label="Institutional Showcase">
+
+      <!-- 1. Header Section Card -->
+      <div class="rec-header-card section-card">
+        <!-- Top Row: Icon + Title & Subtitle -->
+        <div class="rec-header-top-row" style="display: flex; align-items: flex-start; gap: 14px; width: 100%;">
+          <span class="rec-section-icon"
+            style="background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); margin-top: 2px;">🏛️</span>
+          <div class="rec-title-desc-block" style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px;">
+            <h2 class="rec-section-heading" style="margin: 0; font-size: 20px; font-weight: 800; color: #0f172a;">Institutional Showcase</h2>
+            <p class="rec-section-desc" id="showcase-section-desc" style="margin: 4px 0 0 0; color: #64748b; font-size: 13.5px;">
+              Explore a range of real-world examples and experiences of using EdTech tools in teaching and learning.
+            </p>
+          </div>
+        </div>
+
+        <!-- Bottom Row (below subtitle): Action buttons (Back on left, Share on right) -->
+        <div class="rec-header-sub-actions"
+          style="display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; width: 100%; margin-top: 14px;">
+          <!-- Left: Back Navigation Options -->
+          <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+            <button type="button" class="btn btn-secondary" onclick="switchStep(3)" title="Back to Custom Focus"
+              style="display: inline-flex; align-items: center; gap: 8px; font-weight: 600;">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <path d="M19 12H5M12 19l-7-7 7-7" />
+              </svg>
+              <span>Back to Custom Focus</span>
+            </button>
+            <button type="button" class="btn btn-secondary" onclick="switchStep(2)" title="Back to Tool Recommendations"
+              style="display: inline-flex; align-items: center; gap: 8px; font-weight: 600;">
+              <span>Recommendation</span>
+            </button>
+          </div>
+
+          <!-- Right: Share Your Experience with monochrome SVG star icon -->
+          <button type="button" class="btn btn-primary" onclick="openShareSuccessStoryModal()"
+            style="display: inline-flex; align-items: center; gap: 7px; font-weight: 700; background: linear-gradient(135deg, #f59e0b, #d97706); border: none; color: #ffffff; box-shadow: 0 2px 6px rgba(217, 119, 6, 0.25);">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0;">
+              <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+            </svg>
+            <span>Share Your Experience</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- 2. Combined Showcase Box (Filters + Experience Cards in One Big Box) -->
+      <div class="section-card showcase-combined-box" style="margin-bottom: 12px; padding: 22px 24px 24px 24px; background: #ffffff; border: 1.5px solid #e2e8f0; border-radius: 14px; box-shadow: 0 1px 3px rgba(0,0,0,0.03);">
+        
+        <!-- Filter Experiences Toolbar -->
+        <div class="showcase-filter-section" style="padding-bottom: 18px; margin-bottom: 22px; border-bottom: 1px solid #e2e8f0;">
+          <!-- 1. Search Box (All The Way / Full Width) -->
+          <div class="showcase-filter-search-wrap" style="position: relative; display: flex; align-items: center; width: 100%; margin-bottom: 12px;">
+            <span class="showcase-filter-search-icon" aria-hidden="true" style="position: absolute; left: 12px; font-size: 14px; pointer-events: none; line-height: 1;">🔍</span>
+            <input type="text" id="filter-showcase-search" class="showcase-filter-search"
+              placeholder="Search experiences..."
+              oninput="filterShowcaseStories()" autocomplete="off"
+              style="width: 100%; padding: 8px 34px 8px 36px; font-size: 13px; border: 1.5px solid #cbd5e1; border-radius: 8px; background-color: #f8fafc; color: #1e293b; font-weight: 500; height: 38px; box-sizing: border-box;">
+            <button type="button" id="btn-clear-showcase-search" class="showcase-filter-search-clear" onclick="clearShowcaseSearch()"
+              title="Clear search" aria-label="Clear search"
+              style="position: absolute; right: 10px; background: transparent; border: none; color: #94a3b8; font-size: 14px; cursor: pointer; padding: 2px 4px; display: none; line-height: 1;">✕</button>
+          </div>
+
+          <!-- 2. Dropdown Filters (Cluster, Tool, Shared By) -->
+          <div class="showcase-filters-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; margin-bottom: 14px;">
+            <!-- 1. Cluster -->
+            <div class="filter-field">
+              <select id="filter-showcase-cluster" class="form-select" onchange="filterShowcaseStories()" aria-label="Filter by Academic Cluster" style="width: 100%;">
+                <option value="all">All Clusters</option>
+                <option value="BCD">Business, Communication &amp; Design (BCD)</option>
+                <option value="ENG">Engineering &amp; Technology (ENG)</option>
+                <option value="FCB">Food, Chemical &amp; Biotechnology (FCB)</option>
+                <option value="HSS">Health &amp; Social Sciences (HSS)</option>
+                <option value="ICT">Infocomm Technology (ICT)</option>
+                <option value="OTHER">Other</option>
+              </select>
+            </div>
+
+            <!-- 2. Tool -->
+            <div class="filter-field">
+              <select id="filter-showcase-tool" class="form-select" onchange="filterShowcaseStories()" aria-label="Filter by EdTech Tool" style="width: 100%;">
+                <option value="all">All Tools</option>
+                <!-- Dynamically populated -->
+              </select>
+            </div>
+
+            <!-- 3. Shared By -->
+            <div class="filter-field">
+              <select id="filter-showcase-shared-by" class="form-select" onchange="filterShowcaseStories()" aria-label="Filter by Shared By Role" style="width: 100%;">
+                <option value="all">All Roles</option>
+                <option value="Instructor">Instructor</option>
+                <option value="Student">Student</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- 3. Bottom Meta & Action Bar (Count Badge + Reset Filters) -->
+          <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
+            <span id="showcase-stories-count-badge" style="font-size: 12px; background: #eff6ff; color: #1d4ed8; font-weight: 700; padding: 5px 12px; border-radius: 12px; white-space: nowrap;">Showing all experiences</span>
+            <button type="button" class="btn btn-secondary" onclick="resetShowcaseFilters()"
+              style="display: inline-flex; align-items: center; gap: 6px; font-size: 12px; padding: 5px 12px; font-weight: 600;">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex-shrink: 0;">
+                <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+                <path d="M3 3v5h5" />
+              </svg>
+              <span>Reset Filters</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Experience Cards Container -->
+        <div class="showcase-cards-container">
+          <!-- 3. Stories Grid Container -->
+          <div id="showcase-stories-grid" class="showcase-stories-grid" style="display: flex; flex-direction: column; gap: 16px;">
+            <!-- Dynamically rendered via renderShowcaseStories() in app.js -->
+          </div>
+
+          <!-- 4. Empty State -->
+          <div id="showcase-empty-state" class="showcase-empty-state hidden"
+            style="text-align: center; padding: 64px 24px; background: #ffffff; border: 1.5px dashed #cbd5e1; border-radius: 12px;">
+            <div style="font-size: 40px; margin-bottom: 12px;">🏛️</div>
+            <h3 id="showcase-empty-title" style="font-size: 17px; font-weight: 700; color: #1e293b; margin: 0 0 6px 0;">No Experiences Found</h3>
+            <p id="showcase-empty-desc" style="font-size: 13.5px; color: #64748b; max-width: 480px; margin: 0 auto 18px; line-height: 1.5;">
+              No experiences matched your filter criteria. Try adjusting the filters or share a new experience.
+            </p>
+            <div style="display: flex; justify-content: center; gap: 10px; flex-wrap: wrap;">
+              <button type="button" class="btn btn-secondary" onclick="switchStep(2)"
+                style="display: inline-flex; align-items: center; gap: 6px; font-weight: 600;">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                  stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M19 12H5M12 19l-7-7 7-7" />
+                </svg>
+                <span>Back to Recommendation</span>
+              </button>
+              <button type="button" class="btn btn-secondary" onclick="resetShowcaseFilters()"
+                style="display: inline-flex; align-items: center; gap: 6px; font-weight: 600;">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                  stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex-shrink: 0;">
+                  <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+                  <path d="M3 3v5h5" />
+                </svg>
+                <span>Reset Filters</span>
+              </button>
+              <button type="button" class="btn btn-primary" onclick="openShareSuccessStoryModal()"
+                style="display: inline-flex; align-items: center; gap: 7px; font-weight: 700; background: linear-gradient(135deg, #f59e0b, #d97706); border: none; color: #ffffff; box-shadow: 0 2px 6px rgba(217, 119, 6, 0.25);">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                  stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0;">
+                  <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                </svg>
+                <span>Share Your Experience</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- 5. Page 3 Footer Actions: Back to Recommendation at the end of the success story list -->
+      <div id="showcase-footer-actions" class="step-footer-actions showcase-page-footer-actions"
+        style="margin-top: 8px; padding-top: 12px; border-top: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+        <div class="footer-actions-left" style="display: flex; gap: 10px; flex-wrap: wrap;">
+          <button type="button" class="btn btn-secondary" onclick="switchStep(3)"
+            title="Back to Custom Focus (Optional)"
+            style="font-weight: 600; display: inline-flex; align-items: center; gap: 8px;">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round">
+              <path d="M19 12H5M12 19l-7-7 7-7" />
+            </svg>
+            <span>Back to Custom Focus</span>
+          </button>
+          <button type="button" class="btn btn-secondary" onclick="switchStep(2)"
+            title="Back to Tool Recommendations"
+            style="font-weight: 600; display: inline-flex; align-items: center; gap: 8px;">
+            <span>Recommendation</span>
+          </button>
+        </div>
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- ===== FOOTER ===== -->
+  <footer class="footer">
+    <p>EdTechAId &bull; Educational Assistant &bull; Client-Side Browser Processing</p>
+  </footer>
+
+  <!-- ===== TOAST NOTIFICATION ===== -->
+  <div id="toast" class="toast hidden" role="status" aria-live="polite"></div>
+
+  <!-- ===== AI API SETTINGS MODAL ===== -->
+  <div id="api-modal-overlay" class="modal-overlay hidden" onclick="if(event.target===this)closeApiModal()">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <span style="font-size: 20px;">🔑</span>
+          <h3 style="font-size: 16px; font-weight: 700; color: #0f172a; margin: 0;">AI API Configuration</h3>
+        </div>
+        <button type="button" class="modal-close" onclick="closeApiModal()">✕</button>
+      </div>
+
+      <div class="modal-body">
+        <p style="font-size: 12px; color: #475569; margin-bottom: 14px; line-height: 1.5;">
+          Connect your own AI API key to enable live, real-time dynamic pedagogical generation. Your key is stored
+          strictly in your browser's local storage and is never sent to any third-party backend.
+        </p>
+
+        <div class="field-box" style="margin-bottom: 12px;">
+          <label for="api-provider" class="field-label">AI Provider</label>
+          <select id="api-provider" class="form-select" onchange="updateApiKeyPlaceholder()">
+            <option value="gemini" selected>Google Gemini (Gemini 1.5 Flash - Free Tier Available)</option>
+            <option value="openai">OpenAI (ChatGPT / GPT-4o / GPT-4o-mini)</option>
+            <option value="anthropic">Anthropic Claude (Claude 3.5 Sonnet)</option>
+          </select>
+        </div>
+
+        <div class="field-box" style="margin-bottom: 12px;">
+          <label for="api-key-input" class="field-label">API Key</label>
+          <div style="display: flex; gap: 6px;">
+            <input type="password" id="api-key-input" class="form-input"
+              placeholder="AIzaSy... (Paste your Google Gemini API key)" autocomplete="off">
+            <button type="button" class="btn btn-secondary" onclick="toggleApiKeyVisibility()" style="padding: 0 12px;"
+              title="Show/Hide Key">👁️</button>
+          </div>
+        </div>
+
+        <div
+          style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: var(--radius-md); padding: 10px 12px; font-size: 11px; color: #64748b; line-height: 1.45;">
+          <strong>🔒 Security &amp; Privacy:</strong>
+          Your API Key is kept 100% on your local machine (<code>localStorage</code>). If you don't enter a key, the app
+          continues using the built-in offline educational simulation for free.
+        </div>
+      </div>
+
+      <div class="modal-footer"
+        style="display: flex; justify-content: space-between; align-items: center; padding-top: 14px; border-top: 1px solid var(--color-border); margin-top: 14px;">
+        <button type="button" class="btn btn-secondary" onclick="testApiKeyConnection()">⚡ Test Connection</button>
+        <div style="display: flex; gap: 8px;">
+          <button type="button" class="btn btn-secondary" onclick="clearApiKey()" style="color: #dc2626;">Remove
+            Key</button>
+          <button type="button" class="btn btn-primary" onclick="saveApiKey()">Save Key</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== EDTECH TOOLS CATALOG MODAL ===== -->
+  <div id="edtech-tools-modal-overlay" class="modal-overlay hidden"
+    onclick="if(event.target===this)closeEdTechToolsModal()">
+    <div class="edtech-catalog-modal">
+
+      <!-- Modal Header -->
+      <div class="edtech-modal-header">
+        <div class="edtech-modal-title-group">
+          <div class="edtech-modal-icon-badge">🧰</div>
+          <div>
+            <div class="edtech-modal-header-top">
+              <h2 class="edtech-modal-title">EdTech Tools Directory</h2>
+            </div>
+            <p class="edtech-modal-subtitle">
+              Interactive directory of SIT-supported educational technologies, AI chatbots, assessment suites, and
+              authoring platforms.
+            </p>
+          </div>
+        </div>
+        <button type="button" class="modal-close edtech-modal-close-btn" onclick="closeEdTechToolsModal()"
+          title="Close directory (Esc)">✕</button>
+      </div>
+
+      <!-- Controls & Filter Bar (Sticky) -->
+      <div class="edtech-controls-bar">
+        <!-- Search Row -->
+        <div class="edtech-search-row">
+          <div class="edtech-search-box">
+            <span class="edtech-search-icon">🔍</span>
+            <input type="text" id="edtech-search-input" class="edtech-search-field"
+              placeholder="Search by tool name, keyword, cluster (HSS/ENG/ICT/etc.), category, feature..."
+              oninput="filterEdTechTools()" autocomplete="off">
+            <button type="button" id="edtech-search-clear" class="edtech-search-clear hidden"
+              onclick="clearEdTechSearch()" title="Clear search">✕</button>
+          </div>
+        </div>
+
+        <!-- Filter Dropdowns Row (Category & Tool Family) -->
+        <div class="edtech-filters-row">
+          <div class="edtech-filter-dropdowns">
+            <select id="edtech-category-select" class="edtech-filter-select"
+              onchange="onEdTechCategorySelectChange(this.value)" aria-label="Filter by Category">
+              <option value="all">All Categories (29)</option>
+              <option value="ai-support">AI Support, Tutoring &amp; Feedback (4)</option>
+              <option value="assessment-feedback">Assessment &amp; Feedback (5)</option>
+              <option value="authentic-assessment">Authentic Assessment &amp; Workplace Readiness (6)</option>
+              <option value="cognitive-skills">Cognitive &amp; Professional Skills (1)</option>
+              <option value="interactivity-engagement">Interactivity &amp; Engagement (4)</option>
+              <option value="multimedia-content">Multimedia &amp; Content Creation (4)</option>
+              <option value="personalised-mastery">Personalised Mastery &amp; AI-led Tutoring (4)</option>
+              <option value="structured-collaboration">Structured Collaboration &amp; TBL (1)</option>
+            </select>
+
+            <select id="edtech-family-select" class="edtech-filter-select"
+              onchange="onEdTechFamilySelectChange(this.value)" aria-label="Filter by Tool Family">
+              <option value="all">All Tool Families (29)</option>
+              <option value="aid">AId Family (8)</option>
+              <option value="other">Other Tools (21)</option>
+            </select>
+
+            <button type="button" class="edtech-reset-filters-btn" onclick="resetEdTechFilters()" title="Reset Filters">
+              Reset Filters
+            </button>
+          </div>
+        </div>
+
+        <!-- Filter Status Count Bar -->
+        <div class="edtech-status-bar">
+          <span class="edtech-results-count" id="edtech-results-count">Showing 29 of 29 tools</span>
+          <span class="edtech-support-hint">Need onboarding help? Contact <a
+              href="mailto:edtech@singaporetech.edu.sg?subject=EdTech%20Tools%20Onboarding%20%26%20Consultation%20Support&amp;body=Dear%20SIT%20STLA%20%2F%20EdTech%20Team%2C%0D%0A%0D%0AI%20am%20writing%20to%20seek%20assistance%20with%20EdTech%20tools%20onboarding%20and%20pedagogical%20integration%20for%20my%20module(s).%0D%0A%0D%0A%E2%80%A2%20Module%20Code%20%26%20Title%3A%20%0D%0A%E2%80%A2%20Tool(s)%20of%20Interest%3A%20%0D%0A%E2%80%A2%20Intended%20Use%20%2F%20Class%20Scenario%3A%20%0D%0A%E2%80%A2%20Specific%20Support%20Needed%20(e.g.%2C%20pilot%20onboarding%2C%20consultation%2C%20license%20access)%3A%20%0D%0A%0D%0AThank%20you!%0D%0ASIT%20Instructor"
+              class="edtech-inline-link"
+              title="Click to email STLA EdTech Support with pre-filled onboarding inquiry">edtech@singaporetech.edu.sg</a>
+            or your Cluster Educational Developer.</span>
+        </div>
+      </div>
+
+      <!-- Tools Grid Container (Scrollable) -->
+      <div class="edtech-modal-body" id="edtech-tools-scroll-body">
+        <div class="edtech-tools-grid" id="edtech-tools-grid">
+          <!-- Dynamically populated by app.js -->
+        </div>
+        <div id="edtech-empty-state" class="edtech-empty-state hidden">
+          <div class="empty-icon">🔍</div>
+          <h3>No matching EdTech tools found</h3>
+          <p>Try searching with different keywords like "assessment", "rubric", "quiz", "video", or reset the filters.
+          </p>
+          <button type="button" class="btn btn-secondary" onclick="resetEdTechFilters()">Reset All Filters</button>
+        </div>
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="edtech-modal-footer" style="justify-content: flex-end;">
+        <button type="button" class="btn btn-secondary" onclick="closeEdTechToolsModal()">Close Directory</button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ===== EDTECH TOOL SPECIFICATIONS & CONTACTS POPOUT MODAL ===== -->
+  <div id="edtech-spec-modal-overlay" class="modal-overlay hidden"
+    onclick="if(event.target===this)closeEdTechSpecModal()">
+    <div class="edtech-spec-modal" role="dialog" aria-labelledby="edtech-spec-modal-title">
+      <div class="edtech-spec-modal-header">
+        <div class="edtech-spec-title-group">
+          <span class="edtech-spec-icon-badge" id="edtech-spec-icon">🛠️</span>
+          <div class="edtech-spec-title-col">
+            <h3 id="edtech-spec-modal-title" class="edtech-spec-modal-title">Tool Specifications</h3>
+            <span id="edtech-spec-category-tag" class="edtech-category-tag">Category</span>
+          </div>
+        </div>
+        <button type="button" class="modal-close" onclick="closeEdTechSpecModal()"
+          title="Close specifications (Esc)">✕</button>
+      </div>
+      <div class="edtech-spec-modal-body" id="edtech-spec-modal-body">
+        <!-- Populated dynamically via openEdTechToolSpecModal(toolId) -->
+      </div>
+      <div class="edtech-spec-modal-footer">
+        <button type="button" class="btn btn-secondary" onclick="closeEdTechSpecModal()">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== FLOATING ACTION BAR FOR SELECTED RECOMMENDATION CARDS (COMPARE MODE) ===== -->
+  <div id="selected-tools-action-bar" class="selected-tools-action-bar hidden" role="region"
+    aria-label="Compare Tools in AI Chatbot">
+    <div class="selected-tools-info">
+      <span style="font-size: 16px;">⚖️</span>
+      <strong id="selected-tools-count-text">Compare in AI Chatbot:</strong>
+      <div class="selected-tools-names-pills" id="selected-tools-names-pills"></div>
+    </div>
+    <div style="display: flex; align-items: center; gap: 8px;">
+      <button type="button" class="btn-ask-ai-selected" onclick="submitToolsComparisonToChatbot()"
+        title="Compare selected tools side-by-side in AI Chatbot">
+        <span>⚖️ Compare in AI Chatbot</span>
+      </button>
+      <button type="button" class="btn-clear-selection" onclick="exitCompareToolsMode()"
+        title="Exit comparison mode and cancel selection">
+        <span>✕ Exit Compare</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- ===== SELECTED TOOLS FULL DETAILS & SPECIFICATIONS MODAL ===== -->
+  <div id="selected-details-modal-overlay" class="modal-overlay hidden"
+    onclick="if(event.target===this)closeSelectedToolsDetailsModal()">
+    <div class="selected-details-modal" role="dialog" aria-labelledby="selected-modal-title">
+      <div class="selected-details-modal-header">
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <span
+            style="font-size: 24px; background: rgba(255,255,255,0.15); width: 42px; height: 42px; border-radius: 12px; display: flex; align-items: center; justify-content: center;">📋</span>
+          <div>
+            <h3 id="selected-modal-title" style="font-size: 16px; font-weight: 800; margin: 0; color: #ffffff;">Selected
+              AI Tool Specification</h3>
+            <p id="selected-modal-subtitle" style="font-size: 11.5px; color: #94a3b8; margin: 2px 0 0 0;">In-depth view
+              of capabilities, integration, pedagogical uses, ratings & reviews.</p>
+          </div>
+        </div>
+        <button type="button" class="modal-close" onclick="closeSelectedToolsDetailsModal()"
+          title="Close Details (Esc)">✕</button>
+      </div>
+      <div class="selected-details-modal-body" id="selected-details-modal-body">
+        <!-- Injected via JavaScript -->
+      </div>
+      <div class="edtech-modal-footer"
+        style="background: #ffffff; border-top: 1px solid #e2e8f0; padding: 12px 20px; display: flex; justify-content: space-between; align-items: center;">
+        <span style="font-size: 12px; color: #64748b;" id="selected-modal-footer-count"></span>
+        <button type="button" class="btn btn-secondary" onclick="closeSelectedToolsDetailsModal()">Close
+          Details</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== SAVED BOOKMARKS VIEWER MODAL ===== -->
+  <div id="bookmarks-modal-overlay" class="modal-overlay hidden" onclick="if(event.target===this)closeBookmarksModal()">
+    <div class="bookmarks-modal-card" role="dialog" aria-labelledby="bookmarks-modal-title">
+
+      <!-- Modal Header -->
+      <div class="bookmarks-modal-header">
+        <div class="bookmarks-header-title-group">
+          <div class="bookmarks-modal-icon-badge">⭐</div>
+          <div>
+            <div class="bookmarks-modal-title-row">
+              <h2 id="bookmarks-modal-title" class="bookmarks-modal-title">Saved Bookmarks</h2>
+              <span class="bookmarks-modal-count-pill" id="modal-bookmarks-count">0 Saved Tools</span>
+            </div>
+            <p class="bookmarks-modal-subtitle">
+              Easily look back at your saved EdTech recommendations, explore full specifications, or copy your
+              shortlist.
+            </p>
+          </div>
+        </div>
+        <button type="button" class="modal-close bookmarks-modal-close-btn" onclick="closeBookmarksModal()"
+          title="Close viewer (Esc)">✕</button>
+      </div>
+
+      <!-- Controls & Toolbar -->
+      <div class="bookmarks-modal-toolbar">
+        <div class="bookmarks-search-box">
+          <span class="bookmarks-search-icon">🔍</span>
+          <input type="text" id="bookmarks-search-input" class="bookmarks-search-field"
+            placeholder="Search your saved bookmarks by tool name, category, or capability..."
+            oninput="filterBookmarksList()" autocomplete="off">
+          <button type="button" id="bookmarks-search-clear" class="bookmarks-search-clear hidden"
+            onclick="clearBookmarksSearch()" title="Clear search">✕</button>
+        </div>
+        <div class="bookmarks-toolbar-actions">
+          <button type="button" class="btn-bookmarks-action btn-copy-bookmarks" onclick="copyAllBookmarksSummary()"
+            title="Copy summary of all saved bookmarks to clipboard">
+            <span>📋</span> <span>Copy Shortlist</span>
+          </button>
+          <button type="button" class="btn-bookmarks-action btn-clear-bookmarks" onclick="clearAllBookmarks()"
+            title="Clear all saved bookmarks">
+            <span>🗑️</span> <span>Clear All</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Modal Body (Dynamic Cards Grid or Empty State) -->
+      <div class="bookmarks-modal-body" id="bookmarks-modal-body">
+        <!-- Populated via renderBookmarksModalContent() -->
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="bookmarks-modal-footer">
+        <div class="bookmarks-footer-tip">
+          <span class="tip-icon">💡</span>
+          <span>Bookmarks are automatically saved in your browser and sync across all recommendation cards.</span>
+        </div>
+        <button type="button" class="btn btn-secondary" onclick="closeBookmarksModal()">Close</button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ===== SCORING CALCULATION MODAL ===== -->
+  <div id="scoring-calc-modal-overlay" class="modal-overlay hidden"
+    onclick="if(event.target===this)closeScoringCalcModal()">
+    <div class="modal-card"
+      style="max-width: 1080px; width: 95%; height: 88vh; max-height: 89vh; display: flex; flex-direction: column; padding: 0; overflow: hidden; border-radius: 14px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);">
+      <div class="modal-header"
+        style="padding: 16px 24px; margin-bottom: 0; border-bottom: 1px solid #e2e8f0; background: #ffffff; flex-shrink: 0; display: flex; justify-content: space-between; align-items: center;">
+        <div class="modal-title-group" style="display: flex; align-items: center; gap: 12px;">
+          <div class="modal-icon-badge"
+            style="font-size: 22px; background: #eff6ff; border-radius: 8px; padding: 5px 9px;">🧮</div>
+          <div>
+            <h2 class="modal-title" style="margin: 0; font-size: 17px; font-weight: 800; color: #1e293b;">Recommendation
+              Scoring Calculation</h2>
+            <p class="modal-subtitle" style="margin: 2px 0 0 0; font-size: 12px; color: #64748b;">
+              Transparent points breakdown, mathematical formula, and pedagogical alignment criteria
+            </p>
+          </div>
+        </div>
+        <button type="button" class="modal-close" onclick="closeScoringCalcModal()"
+          title="Close calculation breakdown (Esc)">✕</button>
+      </div>
+      <div class="modal-body" id="scoring-calc-modal-body"
+        style="padding: 18px 24px; overflow-y: auto; flex: 1 1 auto; min-height: 0;">
+        <!-- Populated via openScoringCalcModal() in app.js -->
+      </div>
+      <div class="modal-footer"
+        style="padding: 12px 24px; display: flex; justify-content: flex-end; background: #f8fafc; border-top: 1px solid #e2e8f0; flex-shrink: 0;">
+        <button type="button" class="btn btn-secondary" onclick="closeScoringCalcModal()"
+          style="padding: 7px 22px; border-radius: 9999px; font-weight: 600;">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== SHARE SUCCESS STORY MODAL ===== -->
+  <div id="share-story-modal-overlay" class="modal-overlay hidden"
+    onclick="if(event.target===this)closeShareSuccessStoryModal()">
+    <div class="modal-card" style="max-width: 900px; width: 95%; padding: 18px 24px;">
+      <div class="modal-header" style="margin-bottom: 12px; padding-bottom: 10px;">
+        <div class="modal-title-group" style="display: flex; align-items: center; gap: 12px;">
+          <div class="modal-icon-badge"
+            style="font-size: 22px; background: #fef3c7; border-radius: 8px; padding: 5px 9px;">🌟</div>
+          <div>
+            <h2 id="share-story-modal-title" class="modal-title" style="margin: 0; font-size: 17.5px; font-weight: 800; color: #1e293b;">Share Your Experience</h2>
+            <p id="share-story-modal-subtitle" class="modal-subtitle" style="margin: 2px 0 0 0; font-size: 12px; color: #64748b;">
+              Share your experiences using EdTech tools to inspire SIT instructors and students.
+            </p>
+          </div>
+        </div>
+        <button type="button" class="modal-close" onclick="closeShareSuccessStoryModal()"
+          title="Close (Esc)">✕</button>
+      </div>
+
+      <form id="form-share-story" onsubmit="event.preventDefault(); submitSuccessStory(event); return false;">
+        <div class="modal-body" style="padding: 0; display: flex; flex-direction: column; gap: 11px; max-height: calc(88vh - 120px); overflow-y: auto;">
+          
+          <!-- Row 1: Experience Shared By -->
+          <div class="field-box">
+            <label for="story-shared-by" class="field-label" style="font-weight: 700; margin-bottom: 4px; display: block; font-size: 12.5px;">
+              Experience Shared By <span style="color: #dc2626;">*</span>
+            </label>
+            <select id="story-shared-by" class="form-select" required style="width: 100%;">
+              <option value="" disabled selected>-- Select a Role --</option>
+              <option value="Instructor">Instructor</option>
+              <option value="Student">Student</option>
+            </select>
+          </div>
+
+          <!-- Row 2: Module Code, Module Name, and Cluster -->
+          <div class="share-story-row-grid">
+            <!-- Module Code -->
+            <div class="field-box">
+              <label for="story-module-code" class="field-label" style="font-weight: 700; margin-bottom: 4px; display: flex; align-items: baseline; gap: 6px; font-size: 12.5px;">
+                <span>Module Code</span>
+                <span style="font-size: 10.5px; font-weight: 500; color: #64748b;">(Auto-populated)</span>
+              </label>
+              <input type="text" id="story-module-code" class="form-input" placeholder="e.g., ICT2101" style="width: 100%;">
+            </div>
+
+            <!-- Module Name -->
+            <div class="field-box">
+              <label for="story-module-name" class="field-label" style="font-weight: 700; margin-bottom: 4px; display: flex; align-items: baseline; gap: 6px; font-size: 12.5px;">
+                <span>Module Name</span>
+                <span style="font-size: 10.5px; font-weight: 500; color: #64748b;">(Auto-populated)</span>
+              </label>
+              <input type="text" id="story-module-name" class="form-input" placeholder="e.g., Software Engineering Principles" style="width: 100%;">
+            </div>
+
+            <!-- Cluster -->
+            <div class="field-box">
+              <label for="story-cluster" class="field-label" style="font-weight: 700; margin-bottom: 4px; display: block; font-size: 12.5px;">
+                <span>Cluster <span style="color: #dc2626;">*</span></span>
+              </label>
+              <select id="story-cluster" class="form-select" required style="width: 100%;">
+                <option value="" disabled selected>-- Select an Academic Cluster --</option>
+                <option value="BCD">Business, Communication &amp; Design (BCD)</option>
+                <option value="ENG">Engineering &amp; Technology (ENG)</option>
+                <option value="FCB">Food, Chemical &amp; Biotechnology (FCB)</option>
+                <option value="HSS">Health &amp; Social Sciences (HSS)</option>
+                <option value="ICT">Infocomm Technology (ICT)</option>
+                <option value="OTHER">Other</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Row 3: Tool Name -->
+          <div class="field-box">
+            <label for="story-tool-name" class="field-label" style="font-weight: 700; margin-bottom: 4px; display: block; font-size: 12.5px;">
+              Tool Name <span style="color: #dc2626;">*</span>
+            </label>
+            <select id="story-tool-name" class="form-select" required style="width: 100%;">
+              <option value="" disabled selected>-- Select an EdTech Tool --</option>
+              <!-- Populated dynamically from SIT_EDTECH_TOOLS -->
+            </select>
+          </div>
+
+          <!-- Field 4: Share Your Experience -->
+          <div class="field-box">
+            <label for="story-content" class="field-label" style="font-weight: 700; margin-bottom: 4px; display: block; font-size: 12.5px;">
+              Share Your Experience <span style="color: #dc2626;">*</span>
+            </label>
+            <textarea id="story-content" class="form-textarea" rows="3" required
+              placeholder="Describe your classroom context, pedagogical objective, how the tool was implemented, student response, and key impact or outcomes..."
+              style="width: 100%; min-height: 72px; font-family: inherit; font-size: 13px; padding: 8px 12px; border: 1.5px solid #cbd5e1; border-radius: 8px; resize: vertical;"></textarea>
+          </div>
+
+        </div>
+
+        <div class="modal-footer"
+          style="padding: 12px 0 0 0; margin-top: 14px; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #e2e8f0;">
+          <button type="button" class="btn btn-secondary" onclick="closeShareSuccessStoryModal()">Cancel</button>
+          <button type="button" class="btn btn-primary" id="btn-submit-story" onclick="submitSuccessStory(event)"
+            style="display: inline-flex; align-items: center; justify-content: center; gap: 8px; font-weight: 700; background: linear-gradient(135deg, #f59e0b, #d97706); border: none; color: #ffffff; padding: 10px 22px; border-radius: 9999px; height: 42px; box-shadow: 0 2px 6px rgba(217, 119, 6, 0.25);">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0;">
+              <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+            </svg>
+            <span>Submit Experience</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ===== VIEW TOOL SUCCESS STORIES MODAL ===== -->
+  <div id="tool-stories-modal-overlay" class="modal-overlay hidden"
+    onclick="if(event.target===this)closeToolStoriesModal()">
+    <div class="modal-card" style="max-width: 760px; width: 95%;">
+      <div class="modal-header">
+        <div class="modal-title-group" style="display: flex; align-items: center; gap: 12px;">
+          <div class="modal-icon-badge" id="tool-stories-modal-icon"
+            style="font-size: 24px; background: #eff6ff; border-radius: 8px; padding: 6px 10px;">📖</div>
+          <div>
+            <h2 class="modal-title" id="tool-stories-modal-title" style="margin: 0; font-size: 18px; font-weight: 800; color: #1e293b;">Experiences</h2>
+            <p class="modal-subtitle" id="tool-stories-modal-subtitle" style="margin: 3px 0 0 0; font-size: 12px; color: #64748b;">
+              Authentic teaching and learning experiences from SIT instructors and students
+            </p>
+          </div>
+        </div>
+        <button type="button" class="modal-close" onclick="closeToolStoriesModal()"
+          title="Close (Esc)">✕</button>
+      </div>
+
+      <div class="modal-body" id="tool-stories-modal-body" style="padding: 20px; max-height: 70vh; overflow-y: auto;">
+        <!-- Dynamically rendered via openToolSuccessStoriesModal() in app.js -->
+      </div>
+
+      <div class="modal-footer"
+        style="padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; background: #f8fafc; border-top: 1px solid #e2e8f0; flex-wrap: wrap; gap: 10px;">
+        <button type="button" class="btn btn-secondary" onclick="closeToolStoriesModal(); switchStep(4);">
+          <span>🏛️ Go to Institutional Showcase</span>
+        </button>
+        <button type="button" class="btn btn-primary" id="btn-modal-add-story-for-tool" onclick="openShareStoryForCurrentTool()"
+          style="display: inline-flex; align-items: center; gap: 8px; font-weight: 700; background: linear-gradient(135deg, #f59e0b, #d97706); border: none; color: #ffffff; border-radius: 9999px; height: 42px; padding: 10px 22px;">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0;">
+            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+          </svg>
+          <span>Share an Experience for this Tool</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Floating Back to Top Button -->
+  <button id="btn-back-to-top" class="back-to-top-fab" type="button" aria-label="Back to top" title="Back to top" onclick="scrollToTop()">
+    <svg width="24" height="24" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <!-- Top horizontal bar with rounded ends -->
+      <line x1="22" y1="22" x2="78" y2="22" stroke="currentColor" stroke-width="9" stroke-linecap="round" />
+      <!-- Upward chevron head -->
+      <path d="M22 54 L50 30 L78 54" stroke="currentColor" stroke-width="9" stroke-linecap="round" stroke-linejoin="round" />
+      <!-- Vertical arrow stem -->
+      <line x1="50" y1="32" x2="50" y2="78" stroke="currentColor" stroke-width="9" stroke-linecap="round" />
+    </svg>
+  </button>
+
+  <!-- PDF.js CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  <script>
+    if (typeof pdfjsLib !== 'undefined') {
+      pdfjsLib.GlobalWorkerOptions.workerSrc =
+        'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+    }
+  </script>
+  <script src="app.js?v=20261006_gemini_fix_v14"></script>
+</body>
+
+</html>
